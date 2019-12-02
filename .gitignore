@@ -60,3 +60,6 @@ target/
 
 .idea
 *.iml
+venv
+outputs
+_vizdoom.ini
