@@ -5,7 +5,7 @@ import numpy as np
 from tf_agents.environments import py_environment, utils
 from tf_agents.specs import array_spec
 from tf_agents.trajectories import time_step
-from vizdoom.vizdoom import DoomGame
+from vizdoom import DoomGame
 
 
 class DoomEnvironment(py_environment.PyEnvironment):
