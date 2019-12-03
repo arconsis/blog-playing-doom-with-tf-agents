@@ -114,24 +114,12 @@ def train_eval_doom(
 			batch_size=num_parallel_environments,
 			max_length=replay_buffer_capacity)
 
-		train_checkpointer = common.Checkpointer(
-			ckpt_dir=train_dir,
-			agent=tf_agent,
-			global_step=global_step,
-			metrics=metric_utils.MetricsGroup(train_metrics, 'train_metrics'))
-		policy_checkpointer = common.Checkpointer(
-			ckpt_dir=os.path.join(train_dir, 'policy'),
-			policy=eval_policy,
-			global_step=global_step)
+		train_checkpointer = common.Checkpointer(ckpt_dir=train_dir, agent=tf_agent, global_step=global_step, metrics=metric_utils.MetricsGroup(train_metrics, 'train_metrics'))
+		policy_checkpointer = common.Checkpointer(ckpt_dir=os.path.join(train_dir, 'policy'), policy=eval_policy, global_step=global_step)
 		saved_model = policy_saver.PolicySaver(eval_policy, train_step=global_step)
-
 		train_checkpointer.initialize_or_restore()
 
-		collect_driver = dynamic_episode_driver.DynamicEpisodeDriver(
-			tf_env,
-			collect_policy,
-			observers=[replay_buffer.add_batch] + train_metrics,
-			num_episodes=collect_episodes_per_iteration)
+		collect_driver = dynamic_episode_driver.DynamicEpisodeDriver(tf_env, collect_policy, observers=[replay_buffer.add_batch] + train_metrics, num_episodes=collect_episodes_per_iteration)
 
 
 		def train_step():
@@ -174,7 +162,7 @@ def train_eval_doom(
 				steps_per_sec = ((global_step_val - timed_at_step) / (collect_time + train_time))
 				logging.info('%.3f steps/sec', steps_per_sec)
 				logging.info('collect_time = {}, train_time = {}'.format(collect_time, train_time))
-				
+
 				with tf.compat.v2.summary.record_if(True):
 					tf.compat.v2.summary.scalar(name='global_steps_per_sec', data=steps_per_sec, step=global_step)
 
